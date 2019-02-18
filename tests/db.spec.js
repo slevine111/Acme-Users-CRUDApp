@@ -1,5 +1,5 @@
 const { expect } = require('chai')
-const seed = require('../DataAccess/seed')
+const { seed } = require('../DataAccess/seed')
 const DBMethods = require('../DataAccess/db')
 const { Users, Entries } = require('../DataAccess/models/index')
 

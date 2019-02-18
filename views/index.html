@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form method="GET" action="/user">
+      <input type="text" placeholder="username" name="username" />
+      <% if (wrongUsername) { %>
+      <small>
+        Username does not exist. Try another username or create a new account
+        with Signup button
+      </small>
+      <% } %>
+      <div>
+        <button>Signin</button>
+        <button><a href="/account/signup">Signup</a></button>
+      </div>
+    </form>
+  </body>
+</html>

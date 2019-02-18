@@ -1,20 +1,26 @@
 const { Users, Entries } = require('./models/index')
-const seed = require('./seed')
+//const seed = require('./seed')
 
 class DBMethods {
   static getUserAndEntries(username) {
     return Users.findOne({
       where: { username: username },
       include: Entries
+    }).then(data => {
+      if (data === null) throw new RangeError('user does not exist')
+      return data
     })
   }
 
   static getAndTransformUserEntries(username) {
     return this.getUserAndEntries(username).then(user => {
-      return user.entries.map(entry => ({
-        firstItem: entry.get().firstItem,
-        secondItem: entry.get().secondItem
-      }))
+      return user.entries
+        .map(entry => ({
+          entryId: entry.get().id,
+          firstItem: entry.get().firstItem,
+          secondItem: entry.get().secondItem
+        }))
+        .sort((a, b) => a.entryId - b.entryId)
     })
   }
 
@@ -37,6 +43,11 @@ class DBMethods {
   }
 
   static async createEntriesInstance(username, firstItem, secondItem) {
+    if ([firstItem, secondItem].includes(''))
+      throw new Error('Must enter non-empty values for both items')
+    const entryAlreadyExists =
+      (await this.getOneEntry(username, firstItem, secondItem)) !== null
+    if (entryAlreadyExists) throw new Error('You have already this entry')
     const [newEntry, usersInstance] = await Promise.all([
       Entries.create({ firstItem, secondItem }),
       Users.findOne({ where: { username } })
@@ -49,6 +60,10 @@ class DBMethods {
     return this.getOneEntry(username, firstItem, secondItem).then(entry =>
       entry.destroy()
     )
+  }
+
+  static deleteEntriesInstanceById(entryId) {
+    return Entries.destroy({ where: { id: entryId } })
   }
 
   static async deleteAccount(username) {
@@ -71,6 +86,12 @@ class DBMethods {
     newSecondItem
   ) {
     return this.getOneEntry(username, oldFirstItem, oldSecondItem).then(entry =>
+      entry.update({ firstItem: newFirstItem, secondItem: newSecondItem })
+    )
+  }
+
+  static updateEntriesInstanceById(entryId, newFirstItem, newSecondItem) {
+    return Entries.findOne({ where: { id: entryId } }).then(entry =>
       entry.update({ firstItem: newFirstItem, secondItem: newSecondItem })
     )
   }

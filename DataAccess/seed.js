@@ -35,4 +35,4 @@ const seed = async () => {
   ])
 }
 
-module.exports = seed
+module.exports = { dbInit, seed }
