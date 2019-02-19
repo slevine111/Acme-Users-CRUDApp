@@ -52,7 +52,7 @@
 
     <div id="list-of-entries" class="card">
       <ul class="list-group list-group-flush">
-        <% entries.forEach(entry => { %>
+        <% let count = 0 %> <% entries.forEach(entry => { %> <% count++ %>
         <li class="list-group-item">
           <div id="entry-box">
             <div>
@@ -70,12 +70,14 @@
               </form>
               <button
                 type="button"
+                id="entry-button-<%= count %>"
                 class="btn btn-primary btn-sm"
                 data-toggle="modal"
                 data-target="#update-entry-form-box"
                 data-entryid="<%= entry.entryId %>"
                 data-firstitem="<%= entry.firstItem %>"
                 data-seconditem="<%= entry.secondItem %>"
+                data-username="<%= username %>"
               >
                 Update Entry
               </button>
@@ -91,7 +93,6 @@
       method="POST"
       action="/user/1?username=<%= username %>&_method=PUT"
     >
-      <input type="hidden" name="username" value="<%= username %>" />
       <div
         class="modal fade"
         id="update-entry-form-box"
@@ -118,26 +119,26 @@
             <div class="modal-body">
               <form>
                 <div class="form-group">
-                  <label for="firstItem" class="col-form-label"
+                  <label for="firstItem-change" class="col-form-label"
                     >First Item:</label
                   >
                   <input
                     type="text"
                     class="form-control"
-                    name="firstItem"
-                    id="firstItem"
+                    name="firstItemNew"
+                    id="firstItem-change"
                     placeholder="first item"
                   />
                 </div>
                 <div class="form-group">
-                  <label for="secondItem" class="col-form-label"
+                  <label for="secondItem-change" class="col-form-label"
                     >Second Item:</label
                   >
                   <input
                     type="text"
                     class="form-control"
-                    name="secondItem"
-                    id="secondItem"
+                    name="secondItemNew"
+                    id="secondItem-change"
                     placeholder="second item"
                   />
                 </div>
@@ -166,9 +167,25 @@
 
     <% include ./partials/scriptsatbottom.html %> <% if (error !== undefined &&
     changingEntry !== undefined) { %>
+    <script>
+      document
+        .querySelector('#firstItem-change')
+        .setAttribute('placeholder', '<%= oldfirstitem %>')
+      document
+        .querySelector('#secondItem-change')
+        .setAttribute('placeholder', '<%= oldseconditem %>')
+      document
+        .querySelector('#update-form')
+        .setAttribute(
+          'action',
+          `/user/<%= entryId %>?username=<%= username %>&firstitem=<%= oldfirstitem %>&seconditem=<%= oldseconditem %>&_method=PUT`
+        )
+    </script>
+
     <script src="/static/scripts/onloadWindowFunctionMainPage.js"></script>
-    <% } %>
+    <% } else { %>
 
     <script src="/static/scripts/UpdateEntryPopupBoxListener.js"></script>
+    <% } %>
   </body>
 </html>
