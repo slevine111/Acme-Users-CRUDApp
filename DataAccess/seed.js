@@ -1,19 +1,12 @@
-const connection = require('./connection')
 const { Users, Entries } = require('./models/index')
-
-const dbInit = () => {
-  return connection
-    .authenticate()
-    .then(() => Promise.all([Entries.belongsTo(Users), Users.hasMany(Entries)]))
-    .then(() => connection.sync({ force: true }))
-}
+const dbInit = require('./index')
 
 const createSeedInstances = (model, data) => {
   return Promise.all(data.map(item => model.create(item)))
 }
 
-const seed = async () => {
-  await dbInit()
+const seed = async syncForceValue => {
+  await dbInit(syncForceValue)
   const seedUsers = [{ username: 'erik' }, { username: 'moe' }]
   const seedEntries = [
     { firstItem: 'test', secondItem: 'data' },
@@ -35,4 +28,4 @@ const seed = async () => {
   ])
 }
 
-module.exports = { dbInit, seed }
+module.exports = seed

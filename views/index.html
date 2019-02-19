@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
+    <% include ./partials/header.html %>
   </head>
-  <body>
-    <form method="GET" action="/user">
-      <input type="text" placeholder="username" name="username" />
-      <% if (wrongUsername) { %>
-      <small>
-        Username does not exist. Try another username or create a new account
-        with Signup button
-      </small>
-      <% } %>
-      <div>
-        <button>Signin</button>
-        <button><a href="/account/signup">Signup</a></button>
-      </div>
-    </form>
+  <body id="welcome-page-body">
+    <div class="jumbotron">
+      <h1 class="display-4">Welcome to My Basic CRUD App</h1>
+
+      <form method="GET" action="/user">
+        <div class="form-group">
+          <input
+            id="username-signin-field"
+            class="form-control"
+            type="text"
+            value="<%= newUser %>"
+            placeholder="username"
+            name="username"
+            required
+          />
+        </div>
+        <% if (wrongUsername) { %>
+        <p>
+          <small>
+            Username does not exist. Try another username or create a new
+            account with Signup link at bottom
+          </small>
+        </p>
+        <% } %>
+        <button type="submit" class="btn btn-primary">Signin</button>
+      </form>
+
+      <p id="signup-prompt" class="lead">
+        Don't have an account?
+        <a href="/signup">Signup here</a>
+      </p>
+    </div>
   </body>
 </html>

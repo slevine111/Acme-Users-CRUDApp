@@ -1,7 +1,29 @@
 const { Users, Entries } = require('./models/index')
-//const seed = require('./seed')
 
 class DBMethods {
+  static findAndThrowErrorIfUserExists(username) {
+    return Users.findOne({ where: { username } }).then(user => {
+      if (user !== null)
+        throw new Error('Username already exists. Pick a different username')
+    })
+  }
+
+  static throwErrorIfEntryNotAllowed(username, firstItem, secondItem) {
+    return new Promise((resolve, reject) => {
+      if ([firstItem, secondItem].includes(''))
+        return reject(Error('Must enter non-empty values for both items'))
+      resolve()
+    })
+      .then(() => this.getOneEntry(username, firstItem, secondItem))
+      .then(result => {
+        if (result !== null) throw new Error('You have already this entry')
+      })
+  }
+
+  static getAllUsers() {
+    return Users.findAll().then(users => users.map(user => user.get().username))
+  }
+
   static getUserAndEntries(username) {
     return Users.findOne({
       where: { username: username },
@@ -39,21 +61,20 @@ class DBMethods {
   }
 
   static createUsersInstance(username) {
-    return Users.create({ username })
+    return this.findAndThrowErrorIfUserExists(username).then(() =>
+      Users.create({ username })
+    )
   }
 
-  static async createEntriesInstance(username, firstItem, secondItem) {
-    if ([firstItem, secondItem].includes(''))
-      throw new Error('Must enter non-empty values for both items')
-    const entryAlreadyExists =
-      (await this.getOneEntry(username, firstItem, secondItem)) !== null
-    if (entryAlreadyExists) throw new Error('You have already this entry')
-    const [newEntry, usersInstance] = await Promise.all([
-      Entries.create({ firstItem, secondItem }),
-      Users.findOne({ where: { username } })
-    ])
-    await newEntry.setUser(usersInstance)
-    return newEntry
+  static createEntriesInstance(username, firstItem, secondItem) {
+    return this.throwErrorIfEntryNotAllowed(username, firstItem, secondItem)
+      .then(() => {
+        return Promise.all([
+          Entries.create({ firstItem, secondItem }),
+          Users.findOne({ where: { username } })
+        ])
+      })
+      .then(([newEntry, usersInstance]) => newEntry.setUser(usersInstance))
   }
 
   static deleteEntriesInstance(username, firstItem, secondItem) {
@@ -73,44 +94,30 @@ class DBMethods {
   }
 
   static updateUserName(oldUsername, newUsername) {
-    return this.getUserAndEntries(oldUsername).then(user =>
-      user.update({ username: newUsername })
-    )
+    return this.findAndThrowErrorIfUserExists(newUsername)
+      .then(() => this.getUserAndEntries(oldUsername))
+      .then(user => user.update({ username: newUsername }))
   }
 
-  static updateEntry(
+  static updateEntriesInstanceById(
     username,
-    oldFirstItem,
-    oldSecondItem,
+    entryId,
     newFirstItem,
     newSecondItem
   ) {
-    return this.getOneEntry(username, oldFirstItem, oldSecondItem).then(entry =>
-      entry.update({ firstItem: newFirstItem, secondItem: newSecondItem })
+    return this.throwErrorIfEntryNotAllowed(
+      username,
+      newFirstItem,
+      newSecondItem
     )
-  }
-
-  static updateEntriesInstanceById(entryId, newFirstItem, newSecondItem) {
-    return Entries.findOne({ where: { id: entryId } }).then(entry =>
-      entry.update({ firstItem: newFirstItem, secondItem: newSecondItem })
-    )
+      .then(() => Entries.findOne({ where: { id: entryId } }))
+      .then(entry => {
+        return entry.update({
+          firstItem: newFirstItem,
+          secondItem: newSecondItem
+        })
+      })
   }
 }
 
 module.exports = DBMethods
-
-/*seed()
-  .then(() => DBMethods.getAndTransformUserEntries('erik'))
-  .then(res => console.log(res))
-  .then(() => DBMethods.createUsersInstance('joe'))
-  .then(() => DBMethods.createEntriesInstance('joe', 'new user', 'first item'))
-  .then(() => DBMethods.createEntriesInstance('joe', 'new user', 'second item'))
-  .then(() => DBMethods.createEntriesInstance('erik', 'existing', 'user'))
-  .then(() => DBMethods.deleteEntriesInstance('joe', 'new user', 'second item'))
-  .then(() => DBMethods.deleteAccount('erik'))
-  .then(() => DBMethods.updateUserName('joe', 'curly'))
-  .then(() => DBMethods.updateEntry('moe', 'his', 'chair', 'her', 'stool'))
-  .then(() => DBMethods.getOneEntry('curly', 'new user', 'first item'))
-  .then(res => console.log(res))
-//.then(() => Users.findOne({ where: { username: 'tyt' } }))
-//.then(val => console.log(val))*/

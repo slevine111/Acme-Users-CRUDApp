@@ -1,18 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
+    <% include ./partials/header.html %>
   </head>
   <body>
-    <form method="POST" action="/signup">
-      <input type="text" placeholder="username" name="username" />
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-light justify-content-between"
+    >
+      <a class="navbar-brand" href="/">
+        <img
+          src="/static/banner.png"
+          width="40"
+          height="40"
+          class="d-inline-block align-middle"
+          alt=""
+        />
+        A Basic CRUD App
+      </a>
+    </nav>
 
-      <div>
-        <button>Register</button>
+    <form id="username-signup-box" method="POST" action="/signup">
+      <div class="form-group">
+        <input
+          class="form-control"
+          type="text"
+          placeholder="username"
+          name="username"
+          required
+        />
       </div>
+      <% if (error !== undefined) { %>
+      <p>
+        <small><%= error %></small>
+      </p>
+      <% } %>
+      <button type="submit" class="btn btn-primary">Register</button>
     </form>
   </body>
 </html>

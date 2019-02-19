@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+      crossorigin="anonymous"
+    />
+    <% include ./partials/header.html %>
+  </head>
+  <body id="main-page-body">
+    <% include ./partials/navbar.html %>
+
+    <form
+      id="create-new-entry-form"
+      method="POST"
+      action="/user?username=<%= username %>"
+      class="form-inline"
+    >
+      <span id="firstitem-input-box">
+        <label class="sr-only" for="firstItem">first item</label>
+        <input
+          type="text"
+          class="form-control mb-2 mr-sm-2"
+          id="firstItem"
+          placeholder="first item"
+          name="firstItem"
+        />
+      </span>
+
+      <label class="sr-only" for="secondItem">second item</label>
+      <input
+        type="text"
+        class="form-control mb-2 mr-sm-2"
+        id="secondItem"
+        placeholder="second item"
+        name="secondItem"
+      />
+
+      <button type="submit" class="btn btn-primary mb-2">Create Entry</button>
+    </form>
+
+    <% if (error !== undefined && changingEntry === undefined) { %>
+    <div>
+      <small> <%= error %></small>
+    </div>
+    <% } %>
+
+    <h4 class="italics">My Items</h4>
+
+    <div id="list-of-entries" class="card">
+      <ul class="list-group list-group-flush">
+        <% entries.forEach(entry => { %>
+        <li class="list-group-item">
+          <div id="entry-box">
+            <div>
+              <%= entry.firstItem %> <%= entry.secondItem %>
+            </div>
+            <div id="entry-buttons">
+              <form
+                class="inline"
+                method="POST"
+                action="/user/<%= entry.entryId %>?username=<%= username %>&_method=DELETE"
+              >
+                <button class="btn btn-danger btn-sm" id="delete-button">
+                  Delete Entry
+                </button>
+              </form>
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                data-toggle="modal"
+                data-target="#update-entry-form-box"
+                data-entryid="<%= entry.entryId %>"
+                data-firstitem="<%= entry.firstItem %>"
+                data-seconditem="<%= entry.secondItem %>"
+              >
+                Update Entry
+              </button>
+            </div>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+
+    <form
+      id="update-form"
+      method="POST"
+      action="/user/1?username=<%= username %>&_method=PUT"
+    >
+      <input type="hidden" name="username" value="<%= username %>" />
+      <div
+        class="modal fade"
+        id="update-entry-form-box"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Enter Updated Entry Values
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="firstItem" class="col-form-label"
+                    >First Item:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="firstItem"
+                    id="firstItem"
+                    placeholder="first item"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="secondItem" class="col-form-label"
+                    >Second Item:</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="secondItem"
+                    id="secondItem"
+                    placeholder="second item"
+                  />
+                </div>
+              </form>
+            </div>
+            <% if (error !== undefined && changingEntry !== undefined) { %>
+            <div>
+              <small> <%= error %></small>
+            </div>
+            <% } %>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <% include ./partials/scriptsatbottom.html %> <% if (error !== undefined &&
+    changingEntry !== undefined) { %>
+    <script src="/static/scripts/onloadWindowFunctionMainPage.js"></script>
+    <% } %>
+
+    <script src="/static/scripts/UpdateEntryPopupBoxListener.js"></script>
+  </body>
+</html>

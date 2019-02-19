@@ -1,0 +1,70 @@
+small {
+  color: red;
+}
+
+.italics {
+  font-style: italic;
+}
+
+.inline {
+  display: inline;
+}
+
+.jumbotron {
+  margin: 2% auto;
+  width: 90%;
+  text-align: center;
+}
+
+.card-title {
+  text-align: center;
+}
+
+.row {
+  margin-left: 3%;
+  margin-right: 3%;
+}
+
+.center-and-make-block {
+  display: block;
+  margin: 4% auto;
+}
+
+#list-of-entries {
+  width: 50%;
+}
+
+#username-signin-field {
+  width: 30%;
+  margin: 3% auto 0;
+}
+
+#create-new-entry-form,
+#signup-prompt,
+.row,
+h4.italics {
+  margin-top: 3%;
+}
+
+#entry-box {
+  display: flex;
+  justify-content: space-between;
+}
+#delete-button,
+#firstitem-input-box {
+  margin-right: 10px;
+}
+
+#username-signup-box {
+  margin-left: 20px;
+  margin-top: 2%;
+  width: 30%;
+}
+
+#main-page-body {
+  margin-left: 20px;
+}
+
+#welcome-page-body {
+  text-align: center;
+}
